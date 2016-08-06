@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+	
+<struts>
+	<!-- 配置包, 一个包中可以有多个action.  
+	package的明知必须是唯一的;
+	package可以扩展. 当一个package扩展自另一个package时, 该package会在本身配置的基础上加入扩展的package的配置;
+	父package必须在子package前配置
+		name - package的名称
+		extends - 继承的父package名称
+		abstract - 设置package的属性为抽象. 当其值为true时, package不能定义action
+		namespace - 定义package命名空间. 该命名空间影响到url的地址. 
+			格式为:http://localhost:8080/<project name>/<namespace>/<action name>.action
+	-->
+	<package name="default" namespace="/" extends="struts-default">
+	
+		<!-- 配置默认action -->
+		<default-action-ref name="index"></default-action-ref>
+		<action name="index">
+			<result>/error.jsp</result>
+		</action>
+	
+		<!-- 配置action, 一个action可以被多次映射, 只要name不同.
+			name - action名称
+			class - 对应的类的路径
+			method - 调用action中的方法名
+		-->
+		<action name="helloworld_*" class="com.imooc.action.HelloWorldAction" method="{1}">
+			<!-- 指定结果集 -->
+			<result>/result.jsp</result>
+			<!-- 使用感叹号方式的动态方法调用, 访问时的URL:
+				http://localhost:8080/<project name>/<namespace>/<action name>!<result name>.action
+			 -->
+			<result name="update">/update.jsp</result>
+			<!-- 使用通配符方式动态方法调用 -->
+			<result name="delete">
+				<param name="location">/${#request.path}.jsp</param>
+				<!-- 该参数指定是否可以在实际视图名字中使用OGNL表达式, 默认为true -->
+				<param name="parse">true</param>
+			</result>
+		</action>
+		
+		<!-- 使用method属性指定调用的方法 -->
+		<action name="addAction" method="add" class="com.imooc.action.HelloWorldAction">
+			<result>/add.jsp</result>
+		</action>
+		
+		<action name="LoginAction" method="login" class="com.imooc.action.LoginAction">
+			<result>/success.jsp</result>
+			<!-- 这里的name是result元素的逻辑视图名称, 如果name的省略, 系统将使用默认name值success -->
+			<result name="input">/login.jsp</result>
+		</action>
+		
+	</package>
+</struts>

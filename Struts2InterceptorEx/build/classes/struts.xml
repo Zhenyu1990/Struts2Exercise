@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="true" />
+
+    <package name="default" namespace="/" extends="struts-default">
+    
+    	<!-- 注册拦截器 -->
+    	<interceptors>
+    		<interceptor name="mytimer" class="com.imooc.interceptor.TimerInterceptor"></interceptor>
+    		<interceptor name="auth" class="com.imooc.interceptor.AuthInterceptor"></interceptor>
+    		<!-- 自定义拦截器栈, 组合defaultStack和auth拦截器 -->
+    		<interceptor-stack name="myStack">
+    			<interceptor-ref name="defaultStack"></interceptor-ref>
+    			<interceptor-ref name="auth"></interceptor-ref>
+    		</interceptor-stack>
+    	</interceptors>
+    
+		<action name="timer" class="com.imooc.action.TimerAction">
+			<result>/success.jsp</result>
+			<!-- 为Action显式引用拦截器后, 默认的拦截器defaultStack不再生效, 需要手工引用 -->
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<!-- 引用拦截器 -->
+			<interceptor-ref name="mytimer"></interceptor-ref>
+		</action>
+		
+		<!-- 通过Action访问WEB-INF下的JSP页面, 需要判断用户是否已登录, 如未登录则跳转到登录页面 -->
+		<action name="auth">
+			<result>/WEB-INF/page/manager.jsp</result>
+			<result name="login">/login.jsp</result>
+			<!-- 引用自定义拦截器栈 -->
+			<interceptor-ref name="myStack"></interceptor-ref>
+		</action>
+		
+		<action name="login" class="com.imooc.action.LoginAction" method="login">
+			<result>/WEB-INF/page/manager.jsp</result>
+			<result name="error">/login.jsp</result>
+		</action>
+		
+    </package>
+
+</struts>
